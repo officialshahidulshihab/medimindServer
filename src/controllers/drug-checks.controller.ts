@@ -1,13 +1,24 @@
-import { Request, Response } from 'express';
-import { DrugCheck } from '../models/DrugCheck.js';
+import { Request, Response } from "express";
+import type { FilterQuery } from "../types/mongoose.js";
+import { DrugCheck, IDrugCheck } from "../models/DrugCheck.js";
 
-export const saveDrugCheck = async (req: Request, res: Response): Promise<void> => {
+export const saveDrugCheck = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
-    const { medications, interactionMatrix, dangerFlags, overallRiskLevel } = req.body;
+    const { medications, interactionMatrix, dangerFlags, overallRiskLevel } =
+      req.body;
 
-    if (!medications || !Array.isArray(medications) || medications.length === 0) {
-      res.status(400).json({ success: false, message: 'Medications array is required' });
+    if (
+      !medications ||
+      !Array.isArray(medications) ||
+      medications.length === 0
+    ) {
+      res
+        .status(400)
+        .json({ success: false, message: "Medications array is required" });
       return;
     }
 
@@ -16,22 +27,37 @@ export const saveDrugCheck = async (req: Request, res: Response): Promise<void> 
       medications,
       interactionMatrix,
       dangerFlags: dangerFlags || [],
-      overallRiskLevel
+      overallRiskLevel,
     });
 
     res.status(201).json({ success: true, data: drugCheck });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error saving drug check' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error saving drug check",
+      });
   }
 };
 
-export const getDrugChecks = async (req: Request, res: Response): Promise<void> => {
+export const getDrugChecks = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
-    const checks = await DrugCheck.find({ userId }).sort({ createdAt: -1 });
-    
+    const checks = await DrugCheck.find({
+      userId,
+    } as FilterQuery<IDrugCheck>).sort({ createdAt: -1 });
+
     res.status(200).json({ success: true, data: checks });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error fetching drug checks' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error fetching drug checks",
+      });
   }
 };

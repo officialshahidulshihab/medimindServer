@@ -1,17 +1,18 @@
-import { Router } from 'express';
-import { requireAdmin } from '../middleware/admin.middleware.js';
-import { Doctor } from '../models/Doctor.js';
-import { SymptomSession } from '../models/SymptomSession.js';
-import { DrugCheck } from '../models/DrugCheck.js';
-import { HealthDocument } from '../models/HealthDocument.js';
-import { Appointment } from '../models/Appointment.js';
-import mongoose from 'mongoose';
+import { Router } from "express";
+import type { FilterQuery } from "../types/mongoose.js";
+import { requireAdmin } from "../middleware/admin.middleware.js";
+import { Doctor, IDoctor } from "../models/Doctor.js";
+import { SymptomSession, ISymptomSession } from "../models/SymptomSession.js";
+import { DrugCheck } from "../models/DrugCheck.js";
+import { HealthDocument } from "../models/HealthDocument.js";
+import { Appointment } from "../models/Appointment.js";
+import mongoose from "mongoose";
 
 const router = Router();
 router.use(requireAdmin);
 
 // GET /api/admin/stats
-router.get('/stats', async (req, res): Promise<void> => {
+router.get("/stats", async (req, res): Promise<void> => {
   try {
     const [
       totalDoctors,
@@ -21,33 +22,31 @@ router.get('/stats', async (req, res): Promise<void> => {
       totalDocuments,
     ] = await Promise.all([
       Doctor.countDocuments(),
-      Doctor.countDocuments({ verified: true }),
+      Doctor.countDocuments({ verified: true } as FilterQuery<IDoctor>),
       SymptomSession.countDocuments(),
       DrugCheck.countDocuments(),
       HealthDocument.countDocuments(),
     ]);
 
-    // Activity chart — last 7 days of symptom sessions
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const recentSessions = await SymptomSession.find({
-      createdAt: { $gte: sevenDaysAgo }
-    }).select('createdAt');
+      createdAt: { $gte: sevenDaysAgo },
+    } as FilterQuery<ISymptomSession>).select("createdAt");
 
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const chartData = days.map((day, i) => ({
       day,
-      sessions: recentSessions.filter(s =>
-        new Date(s.createdAt).getDay() === i
-      ).length
+      sessions: recentSessions.filter(
+        (s) => new Date(s.createdAt).getDay() === i,
+      ).length,
     }));
 
-    // Recent doctors added (last 5)
     const recentDoctors = await Doctor.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('name specialty location verified createdAt');
+      .select("name specialty location verified createdAt");
 
     res.status(200).json({
       success: true,
@@ -61,25 +60,25 @@ router.get('/stats', async (req, res): Promise<void> => {
         },
         chartData,
         recentDoctors,
-      }
+      },
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// PATCH /api/admin/doctors/:id/verify — toggle verified status
-router.patch('/doctors/:id/verify', async (req, res): Promise<void> => {
+// PATCH /api/admin/doctors/:id/verify
+router.patch("/doctors/:id/verify", async (req, res): Promise<void> => {
   try {
     const { id } = req.params;
     const { verified } = req.body;
-    const doctor = await Doctor.findByIdAndUpdate(
+    const doctor = await (Doctor.findByIdAndUpdate as Function)(
       id,
       { verified },
-      { new: true }
+      { new: true },
     );
     if (!doctor) {
-      res.status(404).json({ success: false, message: 'Doctor not found' });
+      res.status(404).json({ success: false, message: "Doctor not found" });
       return;
     }
     res.status(200).json({ success: true, data: doctor });
@@ -88,15 +87,18 @@ router.patch('/doctors/:id/verify', async (req, res): Promise<void> => {
   }
 });
 
-// GET /api/admin/users — list all users with roles
-router.get('/users', async (req, res): Promise<void> => {
+// GET /api/admin/users
+router.get("/users", async (req, res): Promise<void> => {
   try {
     const db = mongoose.connection.db;
     if (!db) {
-      res.status(500).json({ success: false, message: 'Database not connected' });
+      res
+        .status(500)
+        .json({ success: false, message: "Database not connected" });
       return;
     }
-    const users = await db.collection('user')
+    const users = await db
+      .collection("user")
       .find({})
       .project({ name: 1, email: 1, role: 1, createdAt: 1, image: 1 })
       .sort({ createdAt: -1 })
@@ -108,36 +110,35 @@ router.get('/users', async (req, res): Promise<void> => {
   }
 });
 
-// PATCH /api/admin/users/:id/role — change user role
-router.patch('/users/:id/role', async (req, res): Promise<void> => {
+// PATCH /api/admin/users/:id/role
+router.patch("/users/:id/role", async (req, res): Promise<void> => {
   try {
     const { id } = req.params;
     const { role } = req.body;
-    if (!['patient', 'admin'].includes(role)) {
-      res.status(400).json({ success: false, message: 'Invalid role' });
+    if (!["patient", "admin"].includes(role)) {
+      res.status(400).json({ success: false, message: "Invalid role" });
       return;
     }
     const db = mongoose.connection.db;
     if (!db) {
-      res.status(500).json({ success: false, message: 'Database not connected' });
+      res
+        .status(500)
+        .json({ success: false, message: "Database not connected" });
       return;
     }
-    await db.collection<any>('user').updateOne(
-      { _id: id },
-      { $set: { role } }
-    );
-    res.status(200).json({ success: true, message: 'Role updated' });
+    await db.collection<any>("user").updateOne({ _id: id }, { $set: { role } });
+    res.status(200).json({ success: true, message: "Role updated" });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// GET /api/admin/appointments — list all appointments
-router.get('/appointments', async (req, res): Promise<void> => {
+// GET /api/admin/appointments
+router.get("/appointments", async (req, res): Promise<void> => {
   try {
     const appointments = await Appointment.find()
-      .populate('patientId', 'name email')
-      .populate('doctorId', 'name specialty')
+      .populate("patientId", "name email")
+      .populate("doctorId", "name specialty")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, data: appointments });

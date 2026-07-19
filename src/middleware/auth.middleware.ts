@@ -4,7 +4,7 @@ import { auth } from '../lib/auth.js';
 export const requireAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const session = await auth.api.getSession({
-      headers: req.headers,
+      headers: req.headers as unknown as Headers,
     });
 
     if (!session || !session.user) {
@@ -12,7 +12,6 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    // Attach user information to request object for downstream usage
     (req as any).user = session.user;
     next();
   } catch (error) {

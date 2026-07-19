@@ -165,7 +165,7 @@ const blogPostsData = [
     tags: ["Prevention", "Screening", "Health"],
     coverImageUrl: "https://images.unsplash.com/photo-1576091160550-2173ff9e5eb3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     readTimeMinutes: 4,
-    publishedAt: new Date(Date.now() - 86400000) // 1 day ago
+    publishedAt: new Date(Date.now() - 86400000)
   },
   {
     title: "Managing Anxiety in a Fast-Paced World",
@@ -176,7 +176,7 @@ const blogPostsData = [
     tags: ["Anxiety", "Mental Health", "Stress"],
     coverImageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     readTimeMinutes: 6,
-    publishedAt: new Date(Date.now() - 172800000) // 2 days ago
+    publishedAt: new Date(Date.now() - 172800000)
   }
 ];
 
@@ -185,38 +185,33 @@ async function seed() {
     await mongoose.connect(mongoUri);
     console.log('Connected to MongoDB');
 
-    // Clear existing collections
     await User.deleteMany({});
     await Doctor.deleteMany({});
     await BlogPost.deleteMany({});
     console.log('Cleared existing data');
 
-    // Create demo user
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('demo1234', salt);
-    
-    // BetterAuth expects specific fields, we add password directly to user document
+
     const demoUser = await User.create({
       name: "Demo User",
       email: "demo@medimind.com",
       emailVerified: true,
-      password: hashedPassword, // Added directly to user doc
+      password: hashedPassword,
       image: "https://ui-avatars.com/api/?name=Demo+User"
     });
     console.log('Created demo user: demo@medimind.com / demo1234');
 
-    // Assign createdBy to doctors
     const doctorsWithUser = doctorsData.map(doc => ({
       ...doc,
       createdBy: demoUser._id
     }));
 
-    // Insert doctors
-    await Doctor.insertMany(doctorsWithUser);
+    // Cast to any[] — insertMany accepts plain objects, TypeScript just requires the Document type
+    await Doctor.insertMany(doctorsWithUser as any[]);
     console.log(`Created ${doctorsWithUser.length} doctors`);
 
-    // Insert blog posts
-    await BlogPost.insertMany(blogPostsData);
+    await BlogPost.insertMany(blogPostsData as any[]);
     console.log(`Created ${blogPostsData.length} blog posts`);
 
     console.log('Seeding completed successfully!');

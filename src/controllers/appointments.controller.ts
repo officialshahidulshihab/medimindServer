@@ -1,21 +1,40 @@
-import { Request, Response } from 'express';
-import { Appointment } from '../models/Appointment.js';
-import { Doctor } from '../models/Doctor.js';
-import mongoose from 'mongoose';
+import { Request, Response } from "express";
+import type { FilterQuery } from "../types/mongoose.js";
+import { Appointment, IAppointment } from "../models/Appointment.js";
+import { Doctor, IDoctor } from "../models/Doctor.js";
+import mongoose from "mongoose";
 
-export const bookAppointment = async (req: Request, res: Response): Promise<void> => {
+export const bookAppointment = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
-    const { doctorId, appointmentDate, timeSlot, consultationType, reason, notes } = req.body;
+    const {
+      doctorId,
+      appointmentDate,
+      timeSlot,
+      consultationType,
+      reason,
+      notes,
+    } = req.body;
 
-    if (!doctorId || !appointmentDate || !timeSlot || !consultationType || !reason) {
-      res.status(400).json({ success: false, message: 'Missing required fields' });
+    if (
+      !doctorId ||
+      !appointmentDate ||
+      !timeSlot ||
+      !consultationType ||
+      !reason
+    ) {
+      res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
       return;
     }
 
-    const doctorExists = await Doctor.findById(doctorId);
+    const doctorExists = await (Doctor.findById as Function)(doctorId);
     if (!doctorExists) {
-      res.status(404).json({ success: false, message: 'Doctor not found' });
+      res.status(404).json({ success: false, message: "Doctor not found" });
       return;
     }
 
@@ -23,11 +42,16 @@ export const bookAppointment = async (req: Request, res: Response): Promise<void
       patientId: userId,
       doctorId,
       appointmentDate: new Date(appointmentDate),
-      timeSlot
-    });
+      timeSlot,
+    } as FilterQuery<IAppointment>);
 
     if (duplicate) {
-      res.status(409).json({ success: false, message: 'You already have an appointment booked for this slot' });
+      res
+        .status(409)
+        .json({
+          success: false,
+          message: "You already have an appointment booked for this slot",
+        });
       return;
     }
 
@@ -38,170 +62,287 @@ export const bookAppointment = async (req: Request, res: Response): Promise<void
       timeSlot,
       consultationType,
       reason,
-      notes
+      notes,
     });
 
-    res.status(201).json({ success: true, data: appointment, message: 'Appointment booked successfully' });
+    res
+      .status(201)
+      .json({
+        success: true,
+        data: appointment,
+        message: "Appointment booked successfully",
+      });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error booking appointment' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error booking appointment",
+      });
   }
 };
 
-export const getMyAppointments = async (req: Request, res: Response): Promise<void> => {
+export const getMyAppointments = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
-    const appointments = await Appointment.find({ patientId: userId })
+    const appointments = await Appointment.find({
+      patientId: userId,
+    } as FilterQuery<IAppointment>)
       .sort({ appointmentDate: -1 })
-      .populate('doctorId', 'name specialty location imageUrl consultationMode');
-    
+      .populate(
+        "doctorId",
+        "name specialty location imageUrl consultationMode",
+      );
+
     res.status(200).json({ success: true, data: appointments });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error fetching appointments' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error fetching appointments",
+      });
   }
 };
 
-export const getAppointmentsByDoctor = async (req: Request, res: Response): Promise<void> => {
+export const getAppointmentsByDoctor = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { doctorId } = req.params;
     const { date } = req.query;
 
-    const query: any = { doctorId };
-    
+    const query: FilterQuery<IAppointment> = { doctorId };
+
     if (date) {
       const queryDate = new Date(date as string);
-      // Start and end of the day
       const startOfDay = new Date(queryDate.setHours(0, 0, 0, 0));
       const endOfDay = new Date(queryDate.setHours(23, 59, 59, 999));
       query.appointmentDate = { $gte: startOfDay, $lte: endOfDay };
     }
 
-    const appointments = await Appointment.find(query).select('timeSlot status');
-    
+    const appointments =
+      await Appointment.find(query).select("timeSlot status");
+
     res.status(200).json({ success: true, data: appointments });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error fetching doctor appointments' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error fetching doctor appointments",
+      });
   }
 };
 
-export const cancelAppointment = async (req: Request, res: Response): Promise<void> => {
+export const cancelAppointment = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const { id } = req.params;
 
-    const appointment = await Appointment.findOne({ _id: id, patientId: userId });
-    
+    const appointment = await Appointment.findOne({
+      _id: id,
+      patientId: userId,
+    } as FilterQuery<IAppointment>);
+
     if (!appointment) {
-      res.status(404).json({ success: false, message: 'Appointment not found or unauthorized' });
+      res
+        .status(404)
+        .json({
+          success: false,
+          message: "Appointment not found or unauthorized",
+        });
       return;
     }
 
-    appointment.status = 'cancelled';
+    appointment.status = "cancelled";
     await appointment.save();
 
-    res.status(200).json({ success: true, data: appointment, message: 'Appointment cancelled successfully' });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: appointment,
+        message: "Appointment cancelled successfully",
+      });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error cancelling appointment' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error cancelling appointment",
+      });
   }
 };
 
-// GET /api/appointments/doctor-dashboard
-// Doctor sees all appointments for their linked Doctor document
-export const getDoctorAppointments = async (req: Request, res: Response): Promise<void> => {
+export const getDoctorAppointments = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
 
-    // Find the Doctor document linked to this user account
-    const doctor = await Doctor.findOne({ userId });
+    const doctor = await Doctor.findOne({ userId } as FilterQuery<IDoctor>);
     if (!doctor) {
-      res.status(404).json({ success: false, message: 'No doctor profile linked to this account' });
+      res
+        .status(404)
+        .json({
+          success: false,
+          message: "No doctor profile linked to this account",
+        });
       return;
     }
 
     const { status, date } = req.query;
-    const query: any = { doctorId: doctor._id };
+    const query: FilterQuery<IAppointment> = { doctorId: doctor._id };
 
     if (status) query.status = status;
     if (date) {
       const queryDate = new Date(date as string);
       query.appointmentDate = {
         $gte: new Date(queryDate.setHours(0, 0, 0, 0)),
-        $lte: new Date(queryDate.setHours(23, 59, 59, 999))
+        $lte: new Date(queryDate.setHours(23, 59, 59, 999)),
       };
     }
 
     const appointments = await Appointment.find(query)
       .sort({ appointmentDate: 1 })
-      .populate('patientId', 'name email image');
+      .populate("patientId", "name email image");
 
     res.status(200).json({ success: true, data: appointments });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error fetching appointments' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error fetching appointments",
+      });
   }
 };
 
-// PATCH /api/appointments/:id/status
-// Doctor confirms or cancels an appointment
-export const updateAppointmentStatus = async (req: Request, res: Response): Promise<void> => {
+export const updateAppointmentStatus = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['confirmed', 'cancelled'].includes(status)) {
-      res.status(400).json({ success: false, message: 'Status must be confirmed or cancelled' });
+    if (!["confirmed", "cancelled"].includes(status)) {
+      res
+        .status(400)
+        .json({
+          success: false,
+          message: "Status must be confirmed or cancelled",
+        });
       return;
     }
 
-    // Verify this appointment belongs to the doctor's linked Doctor document
-    const doctor = await Doctor.findOne({ userId });
+    const doctor = await Doctor.findOne({ userId } as FilterQuery<IDoctor>);
     if (!doctor) {
-      res.status(403).json({ success: false, message: 'No doctor profile linked to this account' });
+      res
+        .status(403)
+        .json({
+          success: false,
+          message: "No doctor profile linked to this account",
+        });
       return;
     }
 
-    const appointment = await Appointment.findOne({ _id: id, doctorId: doctor._id });
+    const appointment = await Appointment.findOne({
+      _id: id,
+      doctorId: doctor._id,
+    } as FilterQuery<IAppointment>);
     if (!appointment) {
-      res.status(404).json({ success: false, message: 'Appointment not found or unauthorized' });
+      res
+        .status(404)
+        .json({
+          success: false,
+          message: "Appointment not found or unauthorized",
+        });
       return;
     }
 
     appointment.status = status;
     await appointment.save();
 
-    res.status(200).json({ success: true, data: appointment, message: `Appointment ${status}` });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: appointment,
+        message: `Appointment ${status}`,
+      });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error updating appointment status' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error updating appointment status",
+      });
   }
 };
 
-export const linkDoctorProfile = async (req: Request, res: Response): Promise<void> => {
+export const linkDoctorProfile = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const { doctorId } = req.body;
 
-    // Check not already linked
-    const alreadyLinked = await Doctor.findOne({ userId });
+    const alreadyLinked = await Doctor.findOne({
+      userId,
+    } as FilterQuery<IDoctor>);
     if (alreadyLinked) {
-      res.status(409).json({ success: false, message: 'Your account is already linked to a doctor profile' });
+      res
+        .status(409)
+        .json({
+          success: false,
+          message: "Your account is already linked to a doctor profile",
+        });
       return;
     }
 
-    // Check target doctor not already linked to someone else
-    const doctor = await Doctor.findById(doctorId);
+    const doctor = await (Doctor.findById as Function)(doctorId);
     if (!doctor) {
-      res.status(404).json({ success: false, message: 'Doctor not found' });
+      res.status(404).json({ success: false, message: "Doctor not found" });
       return;
     }
     if (doctor.userId) {
-      res.status(409).json({ success: false, message: 'This doctor profile is already claimed' });
+      res
+        .status(409)
+        .json({
+          success: false,
+          message: "This doctor profile is already claimed",
+        });
       return;
     }
 
     doctor.userId = new mongoose.Types.ObjectId(userId);
     await doctor.save();
 
-    res.status(200).json({ success: true, data: doctor, message: 'Profile linked successfully' });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: doctor,
+        message: "Profile linked successfully",
+      });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message || 'Error linking profile' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || "Error linking profile",
+      });
   }
 };

@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 
-
 export const requireDoctor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const sessionUser = (req as any).user;
@@ -9,15 +8,13 @@ export const requireDoctor = async (req: Request, res: Response, next: NextFunct
       return;
     }
 
-    // First check session role
     if (sessionUser.role === 'doctor' || sessionUser.role === 'admin') {
       next();
       return;
     }
 
-    // Fallback: check role directly from DB using User model (User schema has _id: String)
     const { User } = await import('../models/User.js');
-    const dbUser = await User.findById(sessionUser.id).select('role').lean();
+    const dbUser = await (User.findById as Function)(sessionUser.id).select('role').lean();
     if (dbUser && ((dbUser as any).role === 'doctor' || (dbUser as any).role === 'admin')) {
       (req as any).user.role = (dbUser as any).role;
       next();

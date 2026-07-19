@@ -8,7 +8,7 @@ export const requireAdmin = async (
 ): Promise<void> => {
   try {
     const session = await auth.api.getSession({
-      headers: req.headers as any,
+      headers: req.headers as unknown as Headers,
     });
 
     if (!session?.user) {
@@ -17,17 +17,15 @@ export const requireAdmin = async (
     }
 
     const user = session.user as any;
-    
-    // First check session role
+
     if (user.role === 'admin') {
       (req as any).user = { id: user.id, email: user.email, role: user.role };
       next();
       return;
     }
 
-    // Fallback: check role directly from DB
     const { User } = await import('../models/User.js');
-    const dbUser = await User.findById(user.id).select('role').lean();
+    const dbUser = await (User.findById as Function)(user.id).select('role').lean();
     if (dbUser && (dbUser as any).role === 'admin') {
       (req as any).user = { id: user.id, email: user.email, role: (dbUser as any).role };
       next();
