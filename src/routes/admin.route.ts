@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { requireAdmin } from '../middleware/admin.middleware';
-import { Doctor } from '../models/Doctor';
-import { SymptomSession } from '../models/SymptomSession';
-import { DrugCheck } from '../models/DrugCheck';
-import { HealthDocument } from '../models/HealthDocument';
-import { Appointment } from '../models/Appointment';
+import { requireAdmin } from '../middleware/admin.middleware.js';
+import { Doctor } from '../models/Doctor.js';
+import { SymptomSession } from '../models/SymptomSession.js';
+import { DrugCheck } from '../models/DrugCheck.js';
+import { HealthDocument } from '../models/HealthDocument.js';
+import { Appointment } from '../models/Appointment.js';
 import mongoose from 'mongoose';
 
 const router = Router();

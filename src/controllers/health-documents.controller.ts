@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { HealthDocument } from '../models/HealthDocument';
-import cloudinary from '../lib/cloudinary';
+import { HealthDocument } from '../models/HealthDocument.js';
+import cloudinary from '../lib/cloudinary.js';
 import streamifier from 'streamifier';
 
 export const uploadDocument = async (req: Request, res: Response): Promise<void> => {

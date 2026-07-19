@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { createReview, getDoctorReviews, deleteReview } from '../controllers/reviews.controller';
-import { requireAuth } from '../middleware/auth.middleware';
+import { createReview, getDoctorReviews, deleteReview } from '../controllers/reviews.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

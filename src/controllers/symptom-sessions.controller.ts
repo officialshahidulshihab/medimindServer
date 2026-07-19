@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { SymptomSession, SessionStatus } from '../models/SymptomSession';
-import { SessionTurn, Role } from '../models/SessionTurn';
+import { SymptomSession, SessionStatus } from '../models/SymptomSession.js';
+import { SessionTurn, Role } from '../models/SessionTurn.js';
 
 export const createSession = async (req: Request, res: Response): Promise<void> => {
   try {

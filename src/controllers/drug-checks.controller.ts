@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { DrugCheck } from '../models/DrugCheck';
+import { DrugCheck } from '../models/DrugCheck.js';
 
 export const saveDrugCheck = async (req: Request, res: Response): Promise<void> => {
   try {

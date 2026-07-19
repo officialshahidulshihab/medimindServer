@@ -1,9 +1,9 @@
 import express from 'express';
-import { auth } from '../lib/auth';
-import { SymptomSession } from '../models/SymptomSession';
-import { HealthDocument } from '../models/HealthDocument';
-import { DrugCheck } from '../models/DrugCheck';
-import { Bookmark } from '../models/Bookmark';
+import { auth } from '../lib/auth.js';
+import { SymptomSession } from '../models/SymptomSession.js';
+import { HealthDocument } from '../models/HealthDocument.js';
+import { DrugCheck } from '../models/DrugCheck.js';
+import { Bookmark } from '../models/Bookmark.js';
 import mongoose from 'mongoose';
 
 const router = express.Router();

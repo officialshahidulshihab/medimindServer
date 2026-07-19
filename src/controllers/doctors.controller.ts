@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Doctor } from '../models/Doctor';
-import { Review } from '../models/Review';
+import { Doctor } from '../models/Doctor.js';
+import { Review } from '../models/Review.js';
 import '../models/User'; // Ensure User model is registered for population
 
 

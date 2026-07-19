@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Appointment } from '../models/Appointment';
-import { Doctor } from '../models/Doctor';
+import { Appointment } from '../models/Appointment.js';
+import { Doctor } from '../models/Doctor.js';
 import mongoose from 'mongoose';
 
 export const bookAppointment = async (req: Request, res: Response): Promise<void> => {

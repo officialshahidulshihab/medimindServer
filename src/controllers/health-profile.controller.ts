@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserHealthProfile } from '../models/UserHealthProfile';
+import { UserHealthProfile } from '../models/UserHealthProfile.js';
 
 export const getHealthProfile = async (req: Request, res: Response): Promise<void> => {
   try {

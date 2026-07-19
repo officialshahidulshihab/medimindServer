@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getHealthProfile, upsertHealthProfile } from '../controllers/health-profile.controller';
-import { requireAuth } from '../middleware/auth.middleware';
+import { getHealthProfile, upsertHealthProfile } from '../controllers/health-profile.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

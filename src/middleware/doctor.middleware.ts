@@ -16,7 +16,7 @@ export const requireDoctor = async (req: Request, res: Response, next: NextFunct
     }
 
     // Fallback: check role directly from DB using User model (User schema has _id: String)
-    const { User } = await import('../models/User');
+    const { User } = await import('../models/User.js');
     const dbUser = await User.findById(sessionUser.id).select('role').lean();
     if (dbUser && ((dbUser as any).role === 'doctor' || (dbUser as any).role === 'admin')) {
       (req as any).user.role = (dbUser as any).role;

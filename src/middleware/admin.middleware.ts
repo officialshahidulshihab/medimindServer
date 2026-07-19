@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth } from '../lib/auth';
+import { auth } from '../lib/auth.js';
 
 export const requireAdmin = async (
   req: Request,
@@ -26,7 +26,7 @@ export const requireAdmin = async (
     }
 
     // Fallback: check role directly from DB
-    const { User } = await import('../models/User');
+    const { User } = await import('../models/User.js');
     const dbUser = await User.findById(user.id).select('role').lean();
     if (dbUser && (dbUser as any).role === 'admin') {
       (req as any).user = { id: user.id, email: user.email, role: (dbUser as any).role };

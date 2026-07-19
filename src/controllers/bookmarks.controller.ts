@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Bookmark } from '../models/Bookmark';
+import { Bookmark } from '../models/Bookmark.js';
 
 export const toggleBookmark = async (req: Request, res: Response): Promise<void> => {
   try {

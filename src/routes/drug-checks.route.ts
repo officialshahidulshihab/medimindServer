@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { saveDrugCheck, getDrugChecks } from '../controllers/drug-checks.controller';
-import { requireAuth } from '../middleware/auth.middleware';
+import { saveDrugCheck, getDrugChecks } from '../controllers/drug-checks.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

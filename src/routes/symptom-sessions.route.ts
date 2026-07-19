@@ -5,8 +5,8 @@ import {
   getSessionById, 
   addSessionTurn, 
   completeSession 
-} from '../controllers/symptom-sessions.controller';
-import { requireAuth } from '../middleware/auth.middleware';
+} from '../controllers/symptom-sessions.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

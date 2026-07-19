@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getDoctors, getDoctorById, createDoctor, deleteDoctor, selfRegisterDoctor, getMyDoctorProfile } from '../controllers/doctors.controller';
-import { requireAdmin } from '../middleware/admin.middleware';
-import { requireDoctor } from '../middleware/doctor.middleware';
-import { requireAuth } from '../middleware/auth.middleware';
+import { getDoctors, getDoctorById, createDoctor, deleteDoctor, selfRegisterDoctor, getMyDoctorProfile } from '../controllers/doctors.controller.js';
+import { requireAdmin } from '../middleware/admin.middleware.js';
+import { requireDoctor } from '../middleware/doctor.middleware.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

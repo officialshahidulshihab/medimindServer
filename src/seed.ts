@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
-import { User } from './models/User';
-import { Doctor, ConsultationMode } from './models/Doctor';
-import { BlogPost } from './models/BlogPost';
+import { User } from './models/User.js';
+import { Doctor, ConsultationMode } from './models/Doctor.js';
+import { BlogPost } from './models/BlogPost.js';
 
 dotenv.config();
 

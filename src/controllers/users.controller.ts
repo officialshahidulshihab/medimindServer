@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { User } from '../models/User';
-import { SymptomSession } from '../models/SymptomSession';
-import { HealthDocument } from '../models/HealthDocument';
-import { DrugCheck } from '../models/DrugCheck';
-import { Bookmark } from '../models/Bookmark';
-import { Appointment } from '../models/Appointment';
-import { UserHealthProfile } from '../models/UserHealthProfile';
-import { Doctor } from '../models/Doctor';
+import { User } from '../models/User.js';
+import { SymptomSession } from '../models/SymptomSession.js';
+import { HealthDocument } from '../models/HealthDocument.js';
+import { DrugCheck } from '../models/DrugCheck.js';
+import { Bookmark } from '../models/Bookmark.js';
+import { Appointment } from '../models/Appointment.js';
+import { UserHealthProfile } from '../models/UserHealthProfile.js';
+import { Doctor } from '../models/Doctor.js';
 import mongoose from 'mongoose';
 
 export const deleteMe = async (req: Request, res: Response): Promise<void> => {

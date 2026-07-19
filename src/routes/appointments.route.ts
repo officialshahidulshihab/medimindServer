@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.middleware';
-import { requireDoctor } from '../middleware/doctor.middleware';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireDoctor } from '../middleware/doctor.middleware.js';
 import {
   bookAppointment,
   getMyAppointments,
@@ -9,7 +9,7 @@ import {
   getDoctorAppointments,
   updateAppointmentStatus,
   linkDoctorProfile
-} from '../controllers/appointments.controller';
+} from '../controllers/appointments.controller.js';
 
 const router = Router();
 

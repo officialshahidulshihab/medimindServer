@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { SymptomSession } from '../models/SymptomSession';
-import { SessionTurn, Role } from '../models/SessionTurn';
-import { HealthDocument } from '../models/HealthDocument';
-import { UserHealthProfile } from '../models/UserHealthProfile';
-import { runSymptomAgent } from '../ai/symptom-agent';
-import { runDocumentIntelligence } from '../ai/document-intelligence';
-import { runDrugInteractionCheck } from '../ai/drug-interaction';
-import { DrugCheck } from '../models/DrugCheck';
+import { SymptomSession } from '../models/SymptomSession.js';
+import { SessionTurn, Role } from '../models/SessionTurn.js';
+import { HealthDocument } from '../models/HealthDocument.js';
+import { UserHealthProfile } from '../models/UserHealthProfile.js';
+import { runSymptomAgent } from '../ai/symptom-agent.js';
+import { runDocumentIntelligence } from '../ai/document-intelligence.js';
+import { runDrugInteractionCheck } from '../ai/drug-interaction.js';
+import { DrugCheck } from '../models/DrugCheck.js';
 
 export const handleSymptomChat = async (req: Request, res: Response): Promise<void> => {
   try {
