@@ -88,7 +88,14 @@ export async function startServer() {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-  startServer();
+  if (process.env.VERCEL) {
+    // In Vercel serverless, we must not call app.listen()
+    // We just connect to the database asynchronously.
+    connectDB().catch(console.error);
+  } else {
+    // Local execution
+    startServer();
+  }
 }
 
 export default app;
