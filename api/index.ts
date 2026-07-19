@@ -1,5 +1,5 @@
-import app from "../src/index.js";
-import { connectDB, syncIndexes } from "../src/lib/db.js";
+import app from "../src/index";
+import { connectDB, syncIndexes } from "../src/lib/db";
 
 // Connection is cached across warm serverless invocations
 let isReady = false;

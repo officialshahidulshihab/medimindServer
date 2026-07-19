@@ -5,7 +5,6 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import { connectDB, syncIndexes } from "./lib/db.js";
 import { auth } from "./lib/auth.js";
-import { toNodeHandler } from "better-auth/node";
 
 import doctorRoutes from "./routes/doctors.route.js";
 import reviewRoutes from "./routes/reviews.route.js";
@@ -44,7 +43,15 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 // BetterAuth handler — must come BEFORE express.json()
-app.use("/api/auth", toNodeHandler(auth));
+app.use("/api/auth", async (req, res, next) => {
+  try {
+    const { toNodeHandler } = await import("better-auth/node");
+    const handler = toNodeHandler(auth as any);
+    return handler(req as any, res as any);
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
