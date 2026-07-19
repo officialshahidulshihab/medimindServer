@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import type { FilterQuery } from "../types/mongoose.js";
 import { Doctor, IDoctor } from "../models/Doctor.js";
 import { Review, IReview } from "../models/Review.js";
-import "../models/User"; // Ensure User model is registered for population
+import "../models/User.js"; // Ensure User model is registered for population
 
 export const getMyDoctorProfile = async (
   req: Request,
@@ -12,22 +12,18 @@ export const getMyDoctorProfile = async (
     const userId = (req as any).user.id;
     const doctor = await Doctor.findOne({ userId } as FilterQuery<IDoctor>);
     if (!doctor) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          message: "No doctor profile linked to this account",
-        });
+      res.status(404).json({
+        success: false,
+        message: "No doctor profile linked to this account",
+      });
       return;
     }
     res.status(200).json({ success: true, data: doctor });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error fetching profile",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error fetching profile",
+    });
   }
 };
 
@@ -87,12 +83,10 @@ export const getDoctors = async (
       },
     });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error fetching doctors",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error fetching doctors",
+    });
   }
 };
 
@@ -122,12 +116,10 @@ export const getDoctorById = async (
       },
     });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error fetching doctor details",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error fetching doctor details",
+    });
   }
 };
 
@@ -142,12 +134,10 @@ export const createDoctor = async (
     });
     res.status(201).json({ success: true, data: doctor });
   } catch (error: any) {
-    res
-      .status(400)
-      .json({
-        success: false,
-        message: error.message || "Error creating doctor",
-      });
+    res.status(400).json({
+      success: false,
+      message: error.message || "Error creating doctor",
+    });
   }
 };
 
@@ -171,12 +161,10 @@ export const deleteDoctor = async (
       .status(200)
       .json({ success: true, message: "Doctor deleted successfully" });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error deleting doctor",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error deleting doctor",
+    });
   }
 };
 
@@ -199,12 +187,10 @@ export const selfRegisterDoctor = async (
       req.body;
 
     if (!name || !specialty || !location) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "Name, specialty and location are required",
-        });
+      res.status(400).json({
+        success: false,
+        message: "Name, specialty and location are required",
+      });
       return;
     }
 
@@ -223,11 +209,9 @@ export const selfRegisterDoctor = async (
 
     res.status(201).json({ success: true, data: doctor });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error creating doctor profile",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error creating doctor profile",
+    });
   }
 };

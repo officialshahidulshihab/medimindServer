@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import type { FilterQuery } from "../types/mongoose.js";
 import { Review, IReview } from "../models/Review.js";
 import { Doctor, IDoctor } from "../models/Doctor.js";
-import "../models/User"; // Ensure User model is registered for population
+import "../models/User.js"; // Ensure User model is registered for population
 
 export const createReview = async (
   req: Request,
@@ -24,12 +24,10 @@ export const createReview = async (
       doctorId,
     } as FilterQuery<IReview>);
     if (existingReview) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "You have already reviewed this doctor",
-        });
+      res.status(400).json({
+        success: false,
+        message: "You have already reviewed this doctor",
+      });
       return;
     }
 
@@ -49,20 +47,16 @@ export const createReview = async (
     res.status(201).json({ success: true, data: review });
   } catch (error: any) {
     if (error.code === 11000) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "You have already reviewed this doctor",
-        });
+      res.status(400).json({
+        success: false,
+        message: "You have already reviewed this doctor",
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error creating review",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error creating review",
+    });
   }
 };
 
@@ -78,12 +72,10 @@ export const getDoctorReviews = async (
 
     res.status(200).json({ success: true, data: reviews });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error fetching reviews",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error fetching reviews",
+    });
   }
 };
 
@@ -125,11 +117,9 @@ export const deleteReview = async (
       .status(200)
       .json({ success: true, message: "Review deleted successfully" });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Error deleting review",
-      });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error deleting review",
+    });
   }
 };

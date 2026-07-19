@@ -26,6 +26,31 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+let isDbReady = false;
+
+async function ensureDbReady() {
+  if (isDbReady) {
+    return;
+  }
+
+  await connectDB();
+  await syncIndexes();
+  isDbReady = true;
+}
+
+app.use(async (req, res, next) => {
+  if (req.path === "/favicon.ico" || req.path === "/favicon.png") {
+    res.status(204).end();
+    return;
+  }
+
+  try {
+    await ensureDbReady();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Middleware — CORS must be first
 app.use(
@@ -82,11 +107,10 @@ app.use(
   },
 );
 
-// Start Server
+// Start Server (local development only)
 export async function startServer() {
   try {
-    await connectDB();
-    await syncIndexes();
+    await ensureDbReady();
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
@@ -97,15 +121,8 @@ export async function startServer() {
   }
 }
 
-if (process.env.NODE_ENV !== "test") {
-  if (process.env.VERCEL) {
-    // In Vercel serverless, we must not call app.listen()
-    // We just connect to the database asynchronously.
-    connectDB().catch(console.error);
-  } else {
-    // Local execution
-    startServer();
-  }
+if (process.env.NODE_ENV !== "test" && process.env.VERCEL !== "1") {
+  startServer();
 }
 
 export default app;
