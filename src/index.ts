@@ -76,6 +76,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Basic health check route
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "ok", service: "medimind-server" });
+});
+
 app.get("/health", (req, res) => {
   res.status(200).json({ success: true, message: "Server is healthy" });
 });
