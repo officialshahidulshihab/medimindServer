@@ -1,15 +1,12 @@
 // ESM migration fix — src/lib/auth.ts — July 2025
-import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { mongoClient } from "./db.js";
 
 dotenv.config();
 
-const client = new MongoClient(
-  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/medimind",
-);
-const db = client.db();
+const db = mongoClient.db();
 
 const baseURL =
   process.env.BETTER_AUTH_URL ||
