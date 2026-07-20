@@ -11,10 +11,19 @@ const client = new MongoClient(
 );
 const db = client.db();
 
+const baseURL =
+  process.env.BETTER_AUTH_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:5000");
+
+const authSecret =
+  process.env.BETTER_AUTH_SECRET || "medimind-dev-secret-change-me";
+
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
+  secret: authSecret,
+  baseURL,
   emailAndPassword: { enabled: true },
   user: {
     additionalFields: {
@@ -36,7 +45,11 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "https://medimind-client.vercel.app",
-  ],
+    baseURL,
+  ].filter(Boolean),
+  rateLimit: {
+    enabled: false,
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || "",

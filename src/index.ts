@@ -85,6 +85,7 @@ app.get("/health", (req, res) => {
 });
 
 // Mount Routes
+app.use("/doctors", doctorRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
