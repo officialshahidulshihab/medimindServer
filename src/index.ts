@@ -33,7 +33,6 @@ async function ensureDbReady() {
   }
 
   await connectDB();
-  await syncIndexes();
   isDbReady = true;
 }
 
