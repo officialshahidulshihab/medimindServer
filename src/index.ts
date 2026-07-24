@@ -1,9 +1,9 @@
 // ESM migration fix — src/index.ts — July 2025
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import { connectDB, syncIndexes } from "./lib/db.js";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
@@ -21,7 +21,6 @@ import dashboardRoutes from "./routes/dashboard.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import appointmentRoutes from "./routes/appointments.route.js";
 import userRoutes from "./routes/users.route.js";
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

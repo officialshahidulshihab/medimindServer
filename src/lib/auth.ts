@@ -1,10 +1,8 @@
 // ESM migration fix — src/lib/auth.ts — July 2025
-import dotenv from "dotenv";
+import "dotenv/config";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { mongoClient } from "./db.js";
-
-dotenv.config();
 
 const db = mongoClient.db();
 
@@ -46,6 +44,15 @@ export const auth = betterAuth({
   ].filter(Boolean),
   rateLimit: {
     enabled: false,
+  },
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+    },
+    crossSubDomainCookies: {
+      enabled: true,
+    },
   },
   socialProviders: {
     google: {

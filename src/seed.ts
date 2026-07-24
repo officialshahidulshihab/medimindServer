@@ -194,6 +194,7 @@ async function seed() {
     const hashedPassword = await bcrypt.hash('demo1234', salt);
 
     const demoUser = await User.create({
+      _id: new mongoose.Types.ObjectId().toString(),
       name: "Demo User",
       email: "demo@medimind.com",
       emailVerified: true,
