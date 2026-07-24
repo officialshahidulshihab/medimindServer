@@ -41,6 +41,7 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "https://medimind-client.vercel.app",
     baseURL,
+    process.env.CLIENT_URL ? process.env.CLIENT_URL : "",
   ].filter(Boolean),
   rateLimit: {
     enabled: false,
@@ -49,9 +50,6 @@ export const auth = betterAuth({
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
-    },
-    crossSubDomainCookies: {
-      enabled: true,
     },
   },
   socialProviders: {
